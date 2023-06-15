@@ -3,29 +3,36 @@ package main
 import (
 	// 一時的なI/Oを扱うための標準ライブラリ
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 )
 
 func main() {
-	input := input()
-	fmt.Println("入力値は:", input, "です")
-	inferType(input)
+	input_value, err := input()
+	if err != nil {
+		fmt.Println("エラーが発生しました:", err)
+	} else {
+		fmt.Println("入力値は:", input_value, "です")
+	}
+
+	inferType(input_value)
 }
 
-func input() string {
+func input() (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("値を入力してください:")
 
 	if scanner.Scan() {
-		return scanner.Text()
+		return scanner.Text(), nil
 	}
 
-	if scanner.Err() != nil {
-		fmt.Println("Error reading from input:", scanner.Err())
+	if err := scanner.Err(); err != nil {
+		return "", err
 	}
-	return ""
+
+	return "", errors.New("no input provided")
 }
 
 func inferType(input string) {
